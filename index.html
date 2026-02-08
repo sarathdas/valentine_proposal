@@ -128,17 +128,16 @@
         #no {
             background: var(--btn-no);
             color: white;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: relative;
             z-index: 20;
             transition: none;
-            max-width: 90vw;
         }
 
-        #no:hover {
-            animation: none;
+        #no.moving {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            z-index: 30;
         }
 
         .message {
@@ -170,13 +169,13 @@
     <div class="container">
         <img src="IMG_1217.jpg" alt="Our special moment" class="photo" id="photo">
         <h1>❤️ Propose Day 2026 ❤️</h1>
-        <p>Today is Propose Day! Remember our walk with our little dog? Will you be my Valentine?</p>
+        <p>Today is Propose Day! Will you be my Valentine?</p>
         <div class="buttons" id="buttons">
             <button id="yes">Yes! 💕</button>
             <button id="no">No 😢</button>
         </div>
         <div id="yesMessage" class="message">
-            Yay! I love you so much! Let's make this Valentine's Week unforgettable together! 💖✨ Be mine forever? 
+            Yay! I love you so much! 💖✨ Be mine forever? 
         </div>
         <div id="noMessage" class="message">
             Aww... but you can't catch me anyway! 😜 Try again, love?
@@ -188,15 +187,13 @@
         function createHeart() {
             const heart = document.createElement('div');
             heart.className = 'heart';
-            heart.innerHTML = '💖';
+            heart.innerHTML = ['💖', '💕', '💗', '💝'][Math.floor(Math.random() * 4)];
             heart.style.left = Math.random() * 100 + '%';
             heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
             heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
             document.getElementById('hearts').appendChild(heart);
             
-            setTimeout(() => {
-                heart.remove();
-            }, 5000);
+            setTimeout(() => heart.remove(), 5000);
         }
 
         setInterval(createHeart, 300);
@@ -208,63 +205,69 @@
         const noMessage = document.getElementById('noMessage');
         const buttons = document.getElementById('buttons');
         const photo = document.getElementById('photo');
+        let isMoving = false;
 
-        // Load photo with error handling (for GitHub Pages)
-        photo.onerror = function() {
-            photo.style.display = 'none';
-        };
+        photo.onerror = () => photo.style.display = 'none';
 
-        // No button runs away
-        noBtn.addEventListener('mouseenter', (e) => {
-            const rect = noBtn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
+        // No button - IMPOSSIBLE to click!
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        noBtn.addEventListener('mouseenter', () => {
+            if (isMoving) return;
             
-            const dx = x * -0.3;
-            const dy = y * -0.3;
+            isMoving = true;
+            noBtn.classList.add('moving');
             
-            noBtn.style.transform = `translate(${dx}px, ${dy}px)`;
+            const moveNoBtn = () => {
+                if (!isMoving) return;
+                
+                // Calculate position far from mouse - impossible to reach
+                const screenW = window.innerWidth;
+                const screenH = window.innerHeight;
+                
+                // Random edge positions away from mouse
+                const sides = [
+                    { x: Math.random() * screenW, y: -100 }, // Top
+                    { x: Math.random() * screenW, y: screenH + 100 }, // Bottom
+                    { x: -100, y: Math.random() * screenH }, // Left
+                    { x: screenW + 100, y: Math.random() * screenH } // Right
+                ];
+                
+                const pos = sides[Math.floor(Math.random() * 4)];
+                noBtn.style.transform = `translate(${pos.x - mouseX}px, ${pos.y - mouseY}px)`;
+                
+                // Continuous movement
+                setTimeout(moveNoBtn, 50 + Math.random() * 200);
+            };
             
-            setTimeout(() => {
-                noBtn.style.transition = 'transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-                noBtn.style.transform = 'translate(-50%, -50%)';
-                setTimeout(() => noBtn.style.transition = 'none', 600);
-            }, 150);
+            moveNoBtn();
         });
 
         // Yes button with confetti
         yesBtn.addEventListener('click', () => {
+            isMoving = false;
+            noBtn.classList.remove('moving');
             buttons.style.display = 'none';
             yesMessage.style.display = 'block';
             
-            // Confetti explosion
+            // Epic confetti
             confetti({
-                particleCount: 100,
+                particleCount: 150,
                 spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#ff6b9d', '#ff4757', '#f8b500', '#fff']
+                origin: { y: 0.6 }
             });
-            
-            // Multiple bursts
-            setTimeout(() => confetti({
-                particleCount: 80,
-                angle: 60,
-                spread: 55,
-                origin: { x: 0 },
-                colors: ['#ff6b9d', '#ff4757']
-            }), 250);
-            
-            setTimeout(() => confetti({
-                particleCount: 80,
-                angle: 120,
-                spread: 55,
-                origin: { x: 1 },
-                colors: ['#f8b500', '#fff']
-            }), 400);
+            setTimeout(() => confetti({ particleCount: 100, angle: 60, spread: 55, origin: { x: 0 } }), 250);
+            setTimeout(() => confetti({ particleCount: 100, angle: 120, spread: 55, origin: { x: 1 } }), 400);
         });
 
-        // No button click
+        // No button click (literally impossible now)
         noBtn.addEventListener('click', () => {
+            isMoving = false;
+            noBtn.classList.remove('moving');
             buttons.style.display = 'none';
             noMessage.style.display = 'block';
         });
