@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will You Be My Valentine? - Propose Day 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
     <style>
         :root {
             --bg-primary: linear-gradient(135deg, #ff6b9d, #c44569, #f8b500);
@@ -19,26 +20,21 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             background: var(--bg-primary);
             height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
-            position: relative;
             color: white;
             text-align: center;
             padding: 20px;
+            overflow: hidden;
         }
 
         .hearts {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             pointer-events: none;
             z-index: 1;
         }
@@ -46,20 +42,13 @@
         .heart {
             position: absolute;
             font-size: 20px;
-            color: #ff69b4;
             animation: fall linear infinite;
             opacity: 0.8;
         }
 
         @keyframes fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
+            from { transform: translateY(-100vh); opacity: 1; }
+            to { transform: translateY(100vh); opacity: 0; }
         }
 
         .container {
@@ -67,11 +56,6 @@
             z-index: 10;
             max-width: 500px;
             width: 100%;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 20px;
         }
 
         .photo {
@@ -80,197 +64,151 @@
             height: 200px;
             object-fit: cover;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            margin: 0 auto 20px;
+            margin-bottom: 20px;
         }
 
         h1 {
-            font-size: clamp(1.8em, 5vw, 2.5em);
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         p {
-            font-size: clamp(1em, 4vw, 1.2em);
-            line-height: 1.5;
             margin-bottom: 30px;
         }
 
         .buttons {
             display: flex;
-            gap: 15px;
+            gap: 16px;
             justify-content: center;
-            flex-wrap: wrap;
         }
 
         button {
-            padding: clamp(12px, 4vw, 15px) clamp(24px, 8vw, 30px);
-            font-size: clamp(1em, 4vw, 1.2em);
+            padding: 14px 32px;
+            font-size: 1.1em;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             font-weight: bold;
-            min-width: 120px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
         #yes {
             background: var(--btn-yes);
-            color: white;
+            color: #fff;
         }
 
-        #yes:hover:not(:active) {
+        #yes:hover {
             transform: scale(1.05);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
         }
 
         #no {
             background: var(--btn-no);
-            color: white;
+            color: #fff;
             position: relative;
             z-index: 20;
-            transition: none;
         }
 
+        /* Activated ONLY when escaping */
         #no.moving {
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            z-index: 30;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            z-index: 50;
         }
 
         .message {
             display: none;
-            font-size: clamp(1.2em, 5vw, 1.5em);
+            margin-top: 30px;
             padding: 30px;
-            background: rgba(255,255,255,0.2);
             border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            animation: fadeIn 1s ease;
-            max-width: 90vw;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        @media (max-width: 480px) {
-            .buttons { flex-direction: column; align-items: center; }
-            button { width: 80%; max-width: 250px; }
+            background: rgba(255,255,255,0.2);
         }
     </style>
 </head>
 <body>
-    <div class="hearts" id="hearts"></div>
-    
-    <div class="container">
-        <img src="IMG_1217.jpg" alt="Our special moment" class="photo" id="photo">
-        <h1>❤️ Propose Day 2026 ❤️</h1>
-        <p>Today is Propose Day! Will you be my Valentine?</p>
-        <div class="buttons" id="buttons">
-            <button id="yes">Yes! 💕</button>
-            <button id="no">No 😢</button>
-        </div>
-        <div id="yesMessage" class="message">
-            Yay! I love you so much! 💖✨ Be mine forever? 
-        </div>
-        <div id="noMessage" class="message">
-            Aww... but you can't catch me anyway! 😜 Try again, love?
-        </div>
+
+<div class="hearts" id="hearts"></div>
+
+<div class="container">
+    <img src="IMG_1217.jpg" class="photo" id="photo">
+    <h1>❤️ Propose Day 2026 ❤️</h1>
+    <p>Will you be my Valentine?</p>
+
+    <div class="buttons" id="buttons">
+        <button id="yes">Yes 💕</button>
+        <button id="no">No 😢</button>
     </div>
 
-    <script>
-        // Falling hearts
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.className = 'heart';
-            heart.innerHTML = ['💖', '💕', '💗', '💝'][Math.floor(Math.random() * 4)];
-            heart.style.left = Math.random() * 100 + '%';
-            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
-            document.getElementById('hearts').appendChild(heart);
-            
-            setTimeout(() => heart.remove(), 5000);
-        }
+    <div id="yesMessage" class="message">Yay! I love you 💖</div>
+    <div id="noMessage" class="message">Nice try 😜</div>
+</div>
 
-        setInterval(createHeart, 300);
+<script>
+    // Falling hearts
+    setInterval(() => {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.innerText = ['💖','💕','💗','💝'][Math.floor(Math.random()*4)];
+        heart.style.left = Math.random()*100 + '%';
+        heart.style.animationDuration = Math.random()*3 + 2 + 's';
+        document.getElementById('hearts').appendChild(heart);
+        setTimeout(() => heart.remove(), 5000);
+    }, 300);
 
-        // Elements
-        const noBtn = document.getElementById('no');
-        const yesBtn = document.getElementById('yes');
-        const yesMessage = document.getElementById('yesMessage');
-        const noMessage = document.getElementById('noMessage');
-        const buttons = document.getElementById('buttons');
-        const photo = document.getElementById('photo');
-        let isMoving = false;
+    const noBtn = document.getElementById('no');
+    const yesBtn = document.getElementById('yes');
+    const buttons = document.getElementById('buttons');
+    const yesMessage = document.getElementById('yesMessage');
 
-        photo.onerror = () => photo.style.display = 'none';
+    let mouseX = 0, mouseY = 0;
+    let isMoving = false;
 
-        // No button - IMPOSSIBLE to click!
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
+    document.addEventListener('mousemove', e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
 
-        noBtn.addEventListener('mouseenter', () => {
-            if (isMoving) return;
-            
-            isMoving = true;
-            noBtn.classList.add('moving');
-            
-            const moveNoBtn = () => {
-                if (!isMoving) return;
-                
-                // Calculate position far from mouse - impossible to reach
-                const screenW = window.innerWidth;
-                const screenH = window.innerHeight;
-                
-                // Random edge positions away from mouse
-                const sides = [
-                    { x: Math.random() * screenW, y: -100 }, // Top
-                    { x: Math.random() * screenW, y: screenH + 100 }, // Bottom
-                    { x: -100, y: Math.random() * screenH }, // Left
-                    { x: screenW + 100, y: Math.random() * screenH } // Right
-                ];
-                
-                const pos = sides[Math.floor(Math.random() * 4)];
-                noBtn.style.transform = `translate(${pos.x - mouseX}px, ${pos.y - mouseY}px)`;
-                
-                // Continuous movement
-                setTimeout(moveNoBtn, 50 + Math.random() * 200);
-            };
-            
-            moveNoBtn();
-        });
+    function runAway() {
+        const move = () => {
+            if (!isMoving) return;
 
-        // Yes button with confetti
-        yesBtn.addEventListener('click', () => {
-            isMoving = false;
-            noBtn.classList.remove('moving');
-            buttons.style.display = 'none';
-            yesMessage.style.display = 'block';
-            
-            // Epic confetti
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
-            setTimeout(() => confetti({ particleCount: 100, angle: 60, spread: 55, origin: { x: 0 } }), 250);
-            setTimeout(() => confetti({ particleCount: 100, angle: 120, spread: 55, origin: { x: 1 } }), 400);
-        });
+            const w = window.innerWidth;
+            const h = window.innerHeight;
 
-        // No button click (literally impossible now)
-        noBtn.addEventListener('click', () => {
-            isMoving = false;
-            noBtn.classList.remove('moving');
-            buttons.style.display = 'none';
-            noMessage.style.display = 'block';
-        });
-    </script>
+            const spots = [
+                { x: Math.random()*w, y: -120 },
+                { x: Math.random()*w, y: h + 120 },
+                { x: -120, y: Math.random()*h },
+                { x: w + 120, y: Math.random()*h }
+            ];
+
+            const p = spots[Math.floor(Math.random()*spots.length)];
+            noBtn.style.transform =
+                `translate(${p.x - mouseX}px, ${p.y - mouseY}px)`;
+
+            setTimeout(move, 120);
+        };
+        move();
+    }
+
+    const triggerEscape = () => {
+        if (isMoving) return;
+        isMoving = true;
+        noBtn.classList.add('moving');
+        runAway();
+    };
+
+    // Run away when user TRIES to interact
+    noBtn.addEventListener('mouseover', triggerEscape);
+    noBtn.addEventListener('pointerdown', triggerEscape);
+
+    yesBtn.addEventListener('click', () => {
+        isMoving = false;
+        buttons.style.display = 'none';
+        yesMessage.style.display = 'block';
+
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    });
+</script>
+
 </body>
 </html>
